@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* =========================================================
+     TOKENS
+     Colors are set here as fallbacks and overridden at runtime
+     by CONFIG.colors in the script at the bottom of this file.
+     ========================================================= */
+  :root{
+    --bg:#f3f4f3;
+    --black:#0d0d0d;
+    --gray:#6b6b6b;
+    --lgray:#b8b8b2;
+    --line:#ddddd5;
+    --accent:#2563ff;
+    --nav-btn:#2563ff;
+    --nav-btn-text:#ffffff;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg);
+    color:var(--black);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-weight:400;
+    letter-spacing:-0.03em;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3,h4{
+    font-weight:700;
+    letter-spacing:-0.08em;
+    line-height:1.05;
+  }
+
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;}
+  ul{list-style:none;}
+  img{display:block;max-width:100%;}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:0 40px;}
+
+  /* Hide native cursor on pointer-fine devices, show custom cursor */
+  body.has-custom-cursor, body.has-custom-cursor a, body.has-custom-cursor button{cursor:none;}
+  .cursor-dot,.cursor-ring{
+    position:fixed;top:0;left:0;
+    border-radius:50%;
+    pointer-events:none;
+    z-index:9999;
+    transform:translate(-50%,-50%);
+    mix-blend-mode:difference;
+  }
+  .cursor-dot{
+    width:6px;height:6px;
+    background:#ffffff;
+    transition:opacity .2s ease;
+  }
+  .cursor-ring{
+    width:32px;height:32px;
+    border:1px solid #ffffff;
+    transition:width .25s ease,height .25s ease,opacity .2s ease,border-color .25s ease;
+  }
+  .cursor-ring.hover{width:56px;height:56px;}
+  body:not(.has-custom-cursor) .cursor-dot,
+  body:not(.has-custom-cursor) .cursor-ring{display:none;}
+
+  /* ============ NAV ============ */
+  .nav{
+    position:fixed;top:0;left:0;right:0;
+    z-index:500;
+    background:rgba(243,244,243,.7);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1240px;margin:0 auto;padding:20px 40px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .logo{font-size:20px;font-weight:800;letter-spacing:-0.08em;}
+  .nav-menu{display:flex;gap:36px;}
+  .nav-menu a{
+    font-size:14px;color:var(--gray);
+    transition:color .2s ease;
+  }
+  .nav-menu a:hover{color:var(--black);}
+  .nav-btn{
+    background:var(--nav-btn);
+    color:var(--nav-btn-text);
+    font-size:14px;font-weight:600;
+    padding:10px 22px;
+    border-radius:999px;
+    transition:opacity .2s ease;
+  }
+  .nav-btn:hover{opacity:.85;}
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;
+    min-height:92vh;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    padding:140px 40px 90px;
+    background:
+      linear-gradient(180deg, rgba(13,13,13,.35) 0%, rgba(13,13,13,.55) 55%, rgba(13,13,13,.92) 100%),
+      radial-gradient(circle at 20% 20%, rgba(60,60,60,.6), transparent 60%),
+      var(--black);
+    background-size:cover;
+    background-position:center;
+    color:#fff;
+    overflow:hidden;
+  }
+  .hero-inner{max-width:1240px;margin:0 auto;width:100%;position:relative;z-index:2;}
+  .breadcrumb{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;color:rgba(255,255,255,.7);
+    margin-bottom:28px;
+  }
+  .hero-chips{
+    display:flex;flex-wrap:wrap;gap:10px;
+    font-size:13px;color:rgba(255,255,255,.85);
+    margin-bottom:22px;
+  }
+  .hero-chips span{
+    display:flex;align-items:center;gap:10px;
+  }
+  .hero-chips span:not(:last-child)::after{
+    content:'\00b7';
+    margin-left:10px;color:rgba(255,255,255,.4);
+  }
+  .hero-title{
+    font-size:clamp(42px,7vw,96px);
+    font-weight:800;
+    max-width:900px;
+  }
+
+  /* ============ MARQUEE ============ */
+  .marquee{
+    background:var(--black);
+    overflow:hidden;
+    padding:16px 0;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .marquee-track{
+    display:flex;
+    width:max-content;
+    animation:scrollMarquee 26s linear infinite;
+  }
+  .marquee-track span{
+    font-size:15px;
+    font-weight:600;
+    color:var(--accent);
+    white-space:nowrap;
+    padding:0 18px;
+  }
+  .marquee-track span::after{
+    content:'\00b7';
+    margin-left:18px;
+    color:rgba(255,255,255,.35);
+    font-weight:400;
+  }
+  @keyframes scrollMarquee{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+
+  /* ============ SECTIONS ============ */
+  .section{
+    padding:110px 40px;
+    max-width:1240px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-size:14px;
+    color:var(--gray);
+    letter-spacing:-0.03em;
+  }
+  .section-grid{
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:60px;
+    margin-top:28px;
+    align-items:start;
+  }
+  .section-title{
+    font-size:clamp(30px,4vw,48px);
+  }
+  .lead{
+    font-size:19px;
+    color:var(--gray);
+    max-width:44ch;
+  }
+
+  /* reveal-on-scroll */
+  .reveal{
+    opacity:0;
+    transform:translateY(24px);
+    transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in-view{opacity:1;transform:translateY(0);}
+
+  /* Accordion grid (Section 01) */
+  .accordion-grid{
+    margin-top:70px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    border-top:1px solid var(--line);
+    border-left:1px solid var(--line);
+  }
+  .acc-item{
+    border-right:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:32px;
+  }
+  .acc-head{
+    width:100%;
+    display:flex;align-items:center;justify-content:space-between;
+    text-align:left;
+  }
+  .acc-label{font-size:13px;color:var(--gray);}
+  .acc-icon{font-size:18px;color:var(--gray);transition:transform .3s ease;}
+  .acc-item.open .acc-icon{transform:rotate(45deg);}
+  .acc-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s ease;
+  }
+  .acc-body p{
+    padding-top:14px;
+    font-size:22px;
+    font-weight:600;
+    letter-spacing:-0.04em;
+  }
+
+  /* Role list (Section 02) */
+  .role-list{margin-top:60px;border-top:1px solid var(--line);}
+  .role-item{border-bottom:1px solid var(--line);}
+  .role-head{
+    width:100%;
+    display:flex;align-items:center;gap:24px;
+    padding:26px 0;
+  }
+  .role-num{font-size:14px;color:var(--lgray);width:32px;flex-shrink:0;}
+  .role-title{font-size:22px;font-weight:600;letter-spacing:-0.05em;flex:1;text-align:left;}
+  .role-icon{font-size:20px;color:var(--gray);transition:transform .3s ease;}
+  .role-item.open .role-icon{transform:rotate(45deg);}
+  .role-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s ease;
+  }
+  .role-body-inner{padding:0 0 30px 56px;max-width:620px;}
+  .role-body-inner p{color:var(--gray);font-size:16px;margin-bottom:14px;}
+  .role-tag{
+    display:inline-block;
+    font-size:12px;
+    padding:6px 14px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    color:var(--gray);
+  }
+
+  /* Gallery (Section 03) */
+  .section-subtitle{font-size:22px;font-weight:600;letter-spacing:-0.05em;margin-top:16px;}
+  .gallery-grid{
+    margin-top:44px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+  }
+  .gallery-item{
+    aspect-ratio:1/1;
+    background:linear-gradient(135deg,var(--lgray),var(--line));
+    background-size:cover;
+    background-position:center;
+    border-radius:4px;
+  }
+
+  /* Output banner (Section 04) */
+  .output-banner{
+    position:relative;
+    background:var(--black);
+    color:#fff;
+    padding:130px 40px;
+    overflow:hidden;
+  }
+  .watermark{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    font-size:clamp(80px,16vw,260px);
+    font-weight:900;
+    letter-spacing:-0.08em;
+    color:rgba(255,255,255,.04);
+    white-space:nowrap;
+    pointer-events:none;
+    user-select:none;
+  }
+  .output-grid{
+    max-width:1240px;margin:0 auto;
+    position:relative;z-index:2;
+    display:grid;
+    grid-template-columns:1.3fr 0.7fr;
+    gap:60px;
+    align-items:center;
+  }
+  .output-quote{
+    font-size:clamp(26px,3.4vw,40px);
+    font-weight:600;
+    letter-spacing:-0.05em;
+    line-height:1.25;
+    margin-bottom:24px;
+  }
+  .output-desc{color:rgba(255,255,255,.6);font-size:16px;max-width:48ch;}
+  .output-right{display:flex;flex-direction:column;gap:14px;}
+  .spec-pill{
+    display:flex;justify-content:space-between;gap:16px;
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:10px;
+    padding:16px 20px;
+  }
+  .spec-label{color:rgba(255,255,255,.5);font-size:13px;}
+  .spec-value{font-size:14px;font-weight:600;}
+
+  /* Contact */
+  .contact{
+    background:var(--black);
+    color:#fff;
+    padding:130px 40px;
+  }
+  .contact-inner{max-width:760px;margin:0 auto;}
+  .contact-headline{font-size:clamp(32px,5vw,56px);margin-bottom:18px;}
+  .contact-sub{color:rgba(255,255,255,.6);font-size:16px;margin-bottom:50px;max-width:52ch;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+  .form-group{display:flex;flex-direction:column;gap:8px;}
+  .form-group label{font-size:13px;color:rgba(255,255,255,.5);}
+  .form-group input,.form-group select,.form-group textarea{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid rgba(255,255,255,.25);
+    padding:10px 2px;
+    color:#fff;
+    font-size:15px;
+    font-family:inherit;
+    letter-spacing:-0.02em;
+  }
+  .form-group select option{color:#111;}
+  .form-group textarea{resize:vertical;min-height:90px;}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+    outline:none;border-bottom-color:var(--accent);
+  }
+  .submit-btn{
+    margin-top:14px;
+    background:var(--accent);
+    color:#fff;
+    font-size:15px;font-weight:600;
+    padding:14px 32px;
+    border-radius:999px;
+    transition:opacity .2s ease;
+  }
+  .submit-btn:hover{opacity:.85;}
+  .form-note{margin-top:16px;font-size:14px;color:rgba(255,255,255,.6);min-height:20px;}
+
+  /* Footer */
+  .footer{
+    background:var(--black);
+    color:rgba(255,255,255,.5);
+    padding:30px 40px;
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:13px;
+    border-top:1px solid rgba(255,255,255,.08);
+  }
+  .footer-logo{color:#fff;font-weight:700;letter-spacing:-0.08em;}
+
+  @media(max-width:860px){
+    .nav-menu{display:none;}
+    .section-grid{grid-template-columns:1fr;gap:24px;}
+    .accordion-grid{grid-template-columns:1fr;}
+    .gallery-grid{grid-template-columns:repeat(2,1fr);}
+    .output-grid{grid-template-columns:1fr;}
+    .form-row{grid-template-columns:1fr;}
+    .footer{flex-direction:column;gap:8px;text-align:center;}
+    .wrap,.section,.hero,.output-banner,.contact{padding-left:22px;padding-right:22px;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .reveal{transition:none;opacity:1;transform:none;}
+    .marquee-track{animation:none;}
+    .cursor-dot,.cursor-ring{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="logo" id="navLogo">DH.</a>
+      <ul class="nav-menu">
+        <li><a href="#project">Projects</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contacts</a></li>
+      </ul>
+      <a href="#contact" class="nav-btn">Contact Me</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="heroSection">
+    <div class="hero-inner">
+      <a href="#" class="breadcrumb">&larr; All Projects</a>
+      <div class="hero-chips" id="heroChips"></div>
+      <h1 class="hero-title" id="heroTitle"></h1>
+    </div>
+  </header>
+
+  <section class="marquee" aria-hidden="true">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </section>
+
+  <section class="section" id="project">
+    <div class="reveal">
+      <span class="eyebrow" id="eyebrow01">01 / The Project</span>
+    </div>
+    <div class="section-grid reveal">
+      <h2 class="section-title" id="projectTitle"></h2>
+      <p class="lead" id="projectSummary"></p>
+    </div>
+    <div class="accordion-grid" id="projectAccordion"></div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="reveal">
+      <span class="eyebrow" id="eyebrow02">02 / What I Did</span>
+    </div>
+    <h2 class="section-title reveal" id="scopeTitle" style="margin-top:16px;">My Scope of Work</h2>
+    <div class="role-list" id="roleList"></div>
+  </section>
+
+  <section class="section" id="work">
+    <div class="reveal">
+      <span class="eyebrow" id="eyebrow03">03 / Work Samples</span>
+    </div>
+    <h3 class="section-subtitle reveal" id="workSubtitle">Selected Output</h3>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <section class="output-banner">
+    <div class="watermark" id="watermarkText"></div>
+    <div class="output-grid">
+      <div class="reveal">
+        <p class="output-quote" id="outputHeadline"></p>
+        <p class="output-desc" id="outputDescription"></p>
+      </div>
+      <div class="output-right reveal" id="outputSpecs"></div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="contact-inner">
+      <h2 class="contact-headline reveal" id="contactHeadline"></h2>
+      <p class="contact-sub reveal" id="contactSub"></p>
+      <form class="contact-form reveal" id="contactForm">
+        <div class="form-row">
+          <div class="form-group"><label>Name</label><input type="text" name="name" required></div>
+          <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Brand Name</label><input type="text" name="brand"></div>
+          <div class="form-group">
+            <label>What do you need</label>
+            <select name="need">
+              <option>Landing Page</option>
+              <option>Full Website</option>
+              <option>CRM / Automation</option>
+              <option>Ads Management</option>
+              <option>Content Strategy</option>
+              <option>Something Else</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Message</label><textarea name="message" required></textarea></div>
+        <button type="submit" class="submit-btn">Send Message</button>
+        <p class="form-note" id="formNote"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span class="footer-logo" id="footerLogo"></span>
+    <span id="footerCopy"></span>
+    <span id="footerLocation"></span>
+  </footer>
+
+<script>
+/* =====================================================================
+   CONFIG
+   Edit everything in this object to reuse the template for a new
+   project. Colors map directly to the CSS tokens declared in :root.
+   Arrays (stats, projectDetails, roleList, gallery, outputSpecs) can
+   hold as many items as needed; the layout renders them automatically.
+   ===================================================================== */
+const CONFIG = {
+
+  colors:{
+    bg:        '#f3f4f3',
+    black:     '#0d0d0d',
+    gray:      '#6b6b6b',
+    lgray:     '#b8b8b2',
+    line:      '#ddddd5',
+    accent:    '#2563ff',   // REQUIRED: unique accent color for this project
+    navButton: '#2563ff'    // Stays fixed regardless of the project accent
+  },
+
+  logoText: 'DH.',
+
+  hero:{
+    backgroundImage: '',    // optional URL, falls back to a dark gradient
+    chips: ['Client Type', 'Platform', 'Year'],
+    brandTitle: 'Brand Name'
+  },
+
+  stats: [
+    'Result or highlight one',
+    'Result or highlight two',
+    'Result or highlight three',
+    'Result or highlight four'
+  ],
+
+  project:{
+    eyebrow: '01 / The Project',
+    title: 'Brand Name',
+    summary: 'A short one to two sentence summary of the project, the client and the problem this work solved.',
+    details: [
+      { label:'Client',   value:'Client Name' },
+      { label:'Platform', value:'Platform or Program' },
+      { label:'Scope',    value:'Scope or Product' },
+      { label:'Year',     value:'2026' }
+    ]
+  },
+
+  scope:{
+    eyebrow: '02 / What I Did',
+    title: 'My Scope of Work',
+    roles: [
+      { title:'Landing Page Design',   description:'Short description of this part of the work and the outcome it produced.', tag:'Design' },
+      { title:'CRM Setup',             description:'Short description of this part of the work and the outcome it produced.', tag:'Automation' },
+      { title:'Ad Campaign Structure', description:'Short description of this part of the work and the outcome it produced.', tag:'Paid Media' },
+      { title:'Analytics & Tracking',  description:'Short description of this part of the work and the outcome it produced.', tag:'Data' }
+    ]
+  },
+
+  work:{
+    eyebrow: '03 / Work Samples',
+    subtitle: 'Selected Output',
+    gallery: ['', '', '', '', '', '']   // image URLs, empty items render as placeholders
+  },
+
+  output:{
+    headline: 'The result the project delivered, written as a short quote-style statement.',
+    description: 'One or two sentences on the measurable impact or outcome of the work.',
+    specs: [
+      { label:'Timeline', value:'6 weeks' },
+      { label:'Deliverables', value:'Landing page, CRM, ad setup' },
+      { label:'Stack', value:'HTML, CSS, JS, Supabase' }
+    ]
+  },
+
+  contact:{
+    headline: 'Start a project',
+    sub: 'Tell me about your brand and what you need. I will get back to you within one business day.'
+  },
+
+  location: 'Malang, Indonesia'
+};
+
+/* ===================== APPLY THEME ===================== */
+const root = document.documentElement.style;
+root.setProperty('--bg', CONFIG.colors.bg);
+root.setProperty('--black', CONFIG.colors.black);
+root.setProperty('--gray', CONFIG.colors.gray);
+root.setProperty('--lgray', CONFIG.colors.lgray);
+root.setProperty('--line', CONFIG.colors.line);
+root.setProperty('--accent', CONFIG.colors.accent);
+root.setProperty('--nav-btn', CONFIG.colors.navButton);
+
+document.title = CONFIG.hero.brandTitle + ' | Case Study';
+document.getElementById('navLogo').textContent = CONFIG.logoText;
+document.getElementById('footerLogo').textContent = CONFIG.logoText;
+
+/* ===================== HERO ===================== */
+if (CONFIG.hero.backgroundImage) {
+  const heroEl = document.getElementById('heroSection');
+  heroEl.style.backgroundImage =
+    'linear-gradient(180deg, rgba(13,13,13,.35) 0%, rgba(13,13,13,.55) 55%, rgba(13,13,13,.92) 100%), url(' + CONFIG.hero.backgroundImage + ')';
+}
+const heroChips = document.getElementById('heroChips');
+CONFIG.hero.chips.forEach(c => {
+  const span = document.createElement('span');
+  span.textContent = c;
+  heroChips.appendChild(span);
+});
+document.getElementById('heroTitle').textContent = CONFIG.hero.brandTitle;
+
+/* ===================== MARQUEE ===================== */
+const track = document.getElementById('marqueeTrack');
+const marqueeHTML = CONFIG.stats.map(s => '<span>' + s + '</span>').join('');
+track.innerHTML = marqueeHTML + marqueeHTML; // duplicated for seamless loop
+
+/* ===================== SECTION 01: PROJECT ===================== */
+document.getElementById('eyebrow01').textContent = CONFIG.project.eyebrow;
+document.getElementById('projectTitle').textContent = CONFIG.project.title;
+document.getElementById('projectSummary').textContent = CONFIG.project.summary;
+
+const accWrap = document.getElementById('projectAccordion');
+CONFIG.project.details.forEach(item => {
+  const el = document.createElement('div');
+  el.className = 'acc-item';
+  el.innerHTML =
+    '<button class="acc-head" aria-expanded="false">' +
+      '<span class="acc-label">' + item.label + '</span>' +
+      '<span class="acc-icon">+</span>' +
+    '</button>' +
+    '<div class="acc-body"><p>' + item.value + '</p></div>';
+  accWrap.appendChild(el);
+});
+
+/* ===================== SECTION 02: SCOPE ===================== */
+document.getElementById('eyebrow02').textContent = CONFIG.scope.eyebrow;
+document.getElementById('scopeTitle').textContent = CONFIG.scope.title;
+
+const roleWrap = document.getElementById('roleList');
+CONFIG.scope.roles.forEach((role, i) => {
+  const num = String(i + 1).padStart(2, '0') + '.';
+  const el = document.createElement('div');
+  el.className = 'role-item reveal';
+  el.innerHTML =
+    '<button class="role-head" aria-expanded="false">' +
+      '<span class="role-num">' + num + '</span>' +
+      '<span class="role-title">' + role.title + '</span>' +
+      '<span class="role-icon">+</span>' +
+    '</button>' +
+    '<div class="role-body"><div class="role-body-inner">' +
+      '<p>' + role.description + '</p>' +
+      '<span class="role-tag">' + role.tag + '</span>' +
+    '</div></div>';
+  roleWrap.appendChild(el);
+});
+
+/* ===================== SECTION 03: WORK SAMPLES ===================== */
+document.getElementById('eyebrow03').textContent = CONFIG.work.eyebrow;
+document.getElementById('workSubtitle').textContent = CONFIG.work.subtitle;
+
+const galleryWrap = document.getElementById('galleryGrid');
+CONFIG.work.gallery.forEach(url => {
+  const el = document.createElement('div');
+  el.className = 'gallery-item reveal';
+  if (url) el.style.backgroundImage = 'url(' + url + ')';
+  galleryWrap.appendChild(el);
+});
+
+/* ===================== SECTION 04: OUTPUT ===================== */
+document.getElementById('watermarkText').textContent = CONFIG.hero.brandTitle;
+document.getElementById('outputHeadline').textContent = CONFIG.output.headline;
+document.getElementById('outputDescription').textContent = CONFIG.output.description;
+
+const specWrap = document.getElementById('outputSpecs');
+CONFIG.output.specs.forEach(spec => {
+  const el = document.createElement('div');
+  el.className = 'spec-pill';
+  el.innerHTML = '<span class="spec-label">' + spec.label + '</span><span class="spec-value">' + spec.value + '</span>';
+  specWrap.appendChild(el);
+});
+
+/* ===================== CONTACT ===================== */
+document.getElementById('contactHeadline').textContent = CONFIG.contact.headline;
+document.getElementById('contactSub').textContent = CONFIG.contact.sub;
+
+document.getElementById('contactForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  document.getElementById('formNote').textContent = 'Thanks, your message has been noted. I will reply soon.';
+  this.reset();
+});
+
+/* ===================== FOOTER ===================== */
+const year = new Date().getFullYear();
+document.getElementById('footerCopy').textContent = '\u00a9 ' + year + ' ' + CONFIG.hero.brandTitle;
+document.getElementById('footerLocation').textContent = CONFIG.location;
+
+/* ===================== ACCORDION TOGGLES ===================== */
+function bindAccordion(headSelector, itemSelector, bodySelector){
+  document.querySelectorAll(headSelector).forEach(head => {
+    head.addEventListener('click', () => {
+      const item = head.closest(itemSelector);
+      const body = item.querySelector(bodySelector);
+      const isOpen = item.classList.contains('open');
+      item.classList.toggle('open', !isOpen);
+      head.setAttribute('aria-expanded', String(!isOpen));
+      body.style.maxHeight = isOpen ? null : body.scrollHeight + 'px';
+    });
+  });
+}
+bindAccordion('.acc-head', '.acc-item', '.acc-body');
+bindAccordion('.role-head', '.role-item', '.role-body');
+
+/* ===================== SCROLL REVEAL ===================== */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('in-view');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ===================== CUSTOM CURSOR ===================== */
+const isTouch = window.matchMedia('(pointer: coarse)').matches;
+if (!isTouch) {
+  document.body.classList.add('has-custom-cursor');
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+
+  let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+  let ringX = mouseX, ringY = mouseY;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    dot.style.left = mouseX + 'px';
+    dot.style.top = mouseY + 'px';
+  });
+
+  function animateCursor(){
+    ringX += (mouseX - ringX) * 0.18;
+    ringY += (mouseY - ringY) * 0.18;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  document.querySelectorAll('a, button, input, select, textarea').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+  });
+}
+</script>
+
+</body>
+</html>
